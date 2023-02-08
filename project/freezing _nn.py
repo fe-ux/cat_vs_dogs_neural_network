@@ -3,6 +3,7 @@ from keras import models
 from keras import optimizers
 from keras import layers
 from keras import applications
+from keras import regularizers
 from keras.preprocessing.image import ImageDataGenerator
 import tensorflow as tf
 
@@ -29,13 +30,13 @@ data_gen_train=gen_train.flow_from_directory(
     train_dir,
     target_size=(150,150),
     class_mode='binary',
-    batch_size=20
+    batch_size=10
 )
 data_gen_val=gen_val.flow_from_directory(
     val_dir,
     target_size=(150,150),
     class_mode='binary',
-    batch_size=20
+    batch_size=10
 )
 
 freez_model=applications.VGG16(weights='imagenet',include_top=False, input_shape=(150,150,3))
@@ -44,9 +45,9 @@ freez_model.trainable= False
 model=models.Sequential()
 model.add(freez_model)
 model.add(layers.Flatten())
-model.add(layers.Dense(256,activation='relu'))
+model.add(layers.Dense(256,activation='relu',kernel_regularizer=regularizers.l2(0.01)))
 model.add(layers.Dense(1,activation='sigmoid'))
-model.summary()
+
 model.compile(
     loss='binary_crossentropy',
     optimizer=optimizers.RMSprop(lr=2e-5),
@@ -54,8 +55,8 @@ model.compile(
 
 history = model.fit_generator(
     data_gen_train,
-    steps_per_epoch=100,
-    epochs=30,
+    steps_per_epoch=150,
+    epochs=20,
     validation_data=data_gen_val,
     validation_steps=50
     )
