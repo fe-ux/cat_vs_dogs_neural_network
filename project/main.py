@@ -1,10 +1,11 @@
-import graphs as graph
 from keras import models
 import tensorflow as tf
 from keras import applications
 from keras import layers
+from keras import regularizers
 from keras.preprocessing.image import ImageDataGenerator
 from keras import optimizers
+import datetime
 
 physical_devices = tf.config.experimental.list_physical_devices('GPU')
 assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
@@ -31,13 +32,13 @@ data_gen_train=gen_train.flow_from_directory(
     train_dir,
     target_size=(150,150),
     class_mode='binary',
-    batch_size=1
+    batch_size=15
 )
 data_gen_val=gen_val.flow_from_directory(
     val_dir,
     target_size=(150,150),
     class_mode='binary',
-    batch_size=1
+    batch_size=10
 )
 
 freez_model=applications.VGG16(weights='imagenet',include_top=False, input_shape=(150,150,3))
@@ -64,20 +65,17 @@ model.compile(
     optimizer=optimizers.RMSprop(lr=1e-5),
     metrics=['acc']
     )
-history = model.fit_generator(
+
+log_dir = "logs/finall_model/" + datetime.datetime.now().strftime("%Y%m%d + reg l2 0.01 + batch_size 15 / -l2")
+tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
+
+model.fit_generator(
     data_gen_train,
-    steps_per_epoch=1000,
-    epochs=25,
+    steps_per_epoch=100,
+    epochs=30,
     validation_data=data_gen_val,
-    validation_steps=50
+    validation_steps=50,
+    callbacks=[tensorboard_callback]
     )
-
-acc = history.history['acc']
-val_acc = history.history['val_acc']
-loss = history.history['loss']
-val_loss = history.history['val_loss']
-
-graph.main(acc,loss,val_acc,val_loss)
-
 
 model.save("/home/arseniy/main/testprojectgit/project/saved_model/model.h5")
