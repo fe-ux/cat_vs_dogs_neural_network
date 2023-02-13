@@ -33,14 +33,14 @@ data_gen_train=gen_train.flow_from_directory(
     train_dir,
     target_size=(150,150),
     class_mode='binary',
-    batch_size=5
+    batch_size=15
 )
 
 data_gen_val=gen_val.flow_from_directory(
     val_dir,
     target_size=(150,150),
     class_mode='binary',
-    batch_size=5
+    batch_size=10
 )
 
 freez_model=applications.VGG16(weights='imagenet',include_top=False, input_shape=(150,150,3))
@@ -49,7 +49,7 @@ freez_model.trainable= False
 model=models.Sequential()
 model.add(freez_model)
 model.add(layers.Flatten())
-model.add(layers.Dense(256,activation='relu', kernel_regularizer=regularizers.l2(0.02)))
+model.add(layers.Dense(256,activation='relu', kernel_regularizer=regularizers.l2(0.01)))
 model.add(layers.Dense(1,activation='sigmoid'))
 
 model.compile(
@@ -57,7 +57,7 @@ model.compile(
     optimizer=optimizers.RMSprop(lr=2e-5),
     metrics=['acc'])
 
-log_dir = "logs/freez_model/" + datetime.datetime.now().strftime("%Y%m%d + reg l2 0.02")
+log_dir = "logs/freez_model/" + datetime.datetime.now().strftime("%Y%m%d + reg l2 0.01 + batch_size 15")
 tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
 
 model.fit_generator(
@@ -65,7 +65,7 @@ model.fit_generator(
     steps_per_epoch=100,
     epochs=30,
     validation_data=data_gen_val,
-    validation_steps=200,
+    validation_steps=100,
     callbacks=[tensorboard_callback]
     )
 
