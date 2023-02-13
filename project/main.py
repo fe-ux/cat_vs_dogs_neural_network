@@ -21,7 +21,7 @@ gen_train = ImageDataGenerator(
     height_shift_range=0.2,
     shear_range=0.2,
     zoom_range=0.2,
-    horizontal_flip=True,
+    horizontal_flip=False,
     fill_mode='nearest'
 )
 gen_val = ImageDataGenerator(
@@ -31,13 +31,13 @@ data_gen_train=gen_train.flow_from_directory(
     train_dir,
     target_size=(150,150),
     class_mode='binary',
-    batch_size=5
+    batch_size=1
 )
 data_gen_val=gen_val.flow_from_directory(
     val_dir,
     target_size=(150,150),
     class_mode='binary',
-    batch_size=5
+    batch_size=1
 )
 
 freez_model=applications.VGG16(weights='imagenet',include_top=False, input_shape=(150,150,3))
@@ -66,8 +66,8 @@ model.compile(
     )
 history = model.fit_generator(
     data_gen_train,
-    steps_per_epoch=150,
-    epochs=20,
+    steps_per_epoch=1000,
+    epochs=25,
     validation_data=data_gen_val,
     validation_steps=50
     )

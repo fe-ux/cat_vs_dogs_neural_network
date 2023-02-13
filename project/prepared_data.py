@@ -1,4 +1,5 @@
-import os, shutil
+import os
+import cv2
 original_dataset_dir = '/home/arseniy/main/all_data/train'
 base_dir = '/home/arseniy/main/prepared_data'
 os.mkdir(base_dir)
@@ -21,44 +22,34 @@ os.mkdir(validation_cats_dir)
 validation_dogs_dir = os.path.join(validation_dir, 'dogs')
 os.mkdir(validation_dogs_dir)
 
-test_cats_dir = os.path.join(test_dir, 'cats')
-os.mkdir(test_cats_dir)
+train_size=3000
+val_size=1000
+test_size=1000
 
-test_dogs_dir = os.path.join(test_dir, 'dogs')
-os.mkdir(test_dogs_dir)
 
-fnames = ['cat.{}.jpg'.format(i) for i in range(1000)]
-for fname in fnames:
-    src = os.path.join(original_dataset_dir, fname)
-    dst = os.path.join(train_cats_dir, fname)
-    shutil.copyfile(src, dst)
+for i in range(train_size//2):
+    src = os.path.join(original_dataset_dir, "cat.{}.jpg".format(i))
+    dst = os.path.join(train_cats_dir, "{}.jpg".format(i))
+    cv2.imwrite(dst, cv2.imread(src))
 
-fnames = ['cat.{}.jpg'.format(i) for i in range(1000, 1500)]
-for fname in fnames:
-    src = os.path.join(original_dataset_dir, fname)
-    dst = os.path.join(validation_cats_dir, fname)
-    shutil.copyfile(src, dst)
+    src = os.path.join(original_dataset_dir, "dog.{}.jpg".format(i))
+    dst = os.path.join(train_dogs_dir, "{}.jpg".format(i))
+    cv2.imwrite(dst, cv2.imread(src))
 
-fnames = ['cat.{}.jpg'.format(i) for i in range(1500, 2000)]
-for fname in fnames:
-    src = os.path.join(original_dataset_dir, fname)
-    dst = os.path.join(test_cats_dir, fname)
-    shutil.copyfile(src, dst)
+for i in range(train_size//2 , train_size//2 + val_size//2):
+    src = os.path.join(original_dataset_dir, "cat.{}.jpg".format(i))
+    dst = os.path.join(validation_cats_dir, "{}.jpg".format(i - train_size//2))
+    cv2.imwrite(dst, cv2.imread(src))
 
-fnames = ['dog.{}.jpg'.format(i) for i in range(1000)]
-for fname in fnames:
-    src = os.path.join(original_dataset_dir, fname)
-    dst = os.path.join(train_dogs_dir, fname)
-    shutil.copyfile(src, dst)
+    src = os.path.join(original_dataset_dir, "dog.{}.jpg".format(i))
+    dst = os.path.join(validation_dogs_dir, "{}.jpg".format(i - train_size//2))
+    cv2.imwrite(dst, cv2.imread(src))
 
-fnames = ['dog.{}.jpg'.format(i) for i in range(1000, 1500)] 
-for fname in fnames:
-    src = os.path.join(original_dataset_dir, fname)
-    dst = os.path.join(validation_dogs_dir, fname)
-    shutil.copyfile(src, dst)
+for i in range(train_size//2 + val_size//2, train_size//2 + val_size//2 + test_size//2):
+    src = os.path.join(original_dataset_dir, "cat.{}.jpg".format(i))
+    dst = os.path.join(test_dir, "{}.jpg".format(i - train_size//2 - val_size//2))
+    cv2.imwrite(dst, cv2.imread(src))
 
-fnames = ['dog.{}.jpg'.format(i) for i in range(1500, 2000)] 
-for fname in fnames:
-    src = os.path.join(original_dataset_dir, fname)
-    dst = os.path.join(test_dogs_dir, fname)
-    shutil.copyfile(src, dst)
+    src = os.path.join(original_dataset_dir, "dog.{}.jpg".format(i))
+    dst = os.path.join(test_dir, "{}.jpg".format(i - train_size//2 - val_size//2 + test_size//2))
+    cv2.imwrite(dst, cv2.imread(src))
