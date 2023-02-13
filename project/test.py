@@ -1,6 +1,7 @@
 import tensorflow as tf
 import cv2
 import numpy as np
+import os
 
 physical_devices = tf.config.experimental.list_physical_devices('GPU')
 assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
@@ -17,6 +18,7 @@ for j in range(size_test//250):
         t[i]=cv2.resize(m,(150,150), interpolation = cv2.INTER_AREA)
     acc+=tf.math.reduce_sum(new_model.predict(t))
 
-print(acc/size_test)
+with open('finall_acc.txt', 'w') as f:
+    f.write(str(acc/size_test))
 
 
