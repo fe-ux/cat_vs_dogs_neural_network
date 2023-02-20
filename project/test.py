@@ -7,7 +7,7 @@ physical_devices = tf.config.experimental.list_physical_devices('GPU')
 assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
 config = tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
-new_model = tf.keras.models.load_model('/home/arseniy/main/testprojectgit/project/saved_model/model.h5')
+new_model = tf.keras.models.load_model('/home/arseniy/main/cat_vs_dogs_neural_network/project/saved_model/model.h5')
 size_test=1000
 acc=0
 
